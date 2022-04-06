@@ -7,26 +7,31 @@ function time() {
     return new Date().toLocaleString();
 }
 
-let clients: WebSocket[] = [];
+interface Clients {
+    ws: WebSocket;
+    lastTimestamp: number;
+}
+
+const clients: Clients[] = [];
 
 function broadcast(msg: string) {
     clients.forEach((client) => {
-        client.send(msg);
+        if(Date.now() - client.lastTimestamp > 1000){
+            client.ws.send(msg);
+            client.lastTimestamp = Date.now();
+        }
     });
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 wss.on("connection", async (ws: WebSocket) => {
-    let lastMessageTimestamp: number;
-    clients.push(ws);
+    // new instance of a client
+    clients.push({
+        ws,
+        lastTimestamp: Date.now(),
+    });
+
     console.log("connected to server");
     ws.on("message", (msg: string) => {
-        if (lastMessageTimestamp && Date.now() - lastMessageTimestamp < 5000) {
-            return;
-        }
-        lastMessageTimestamp = Date.now();
-        console.log("ms" + msg);
         broadcast(
             JSON.stringify({
                 timestamp: time(),
@@ -34,9 +39,10 @@ wss.on("connection", async (ws: WebSocket) => {
             })
         );
     });
-    await sleep(5000);
+
+
     wss.on("close", () => {
-        clients.slice(clients.indexOf(ws), 1);
+        clients.filter(client => client.ws === ws);
         console.log("disconnected from server");
     });
 });

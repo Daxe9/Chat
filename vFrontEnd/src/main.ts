@@ -10,15 +10,20 @@ interface Message {
 
 ws.addEventListener("open", () => {
     console.log("Connected to server");
-    document.getElementById("btn").addEventListener("click", () => {
-        ws.send(document.querySelector("textarea").value);
-        document.querySelector("textarea").value = "";
+    document.getElementById("text-field").addEventListener("keypress", (e) => {
+        if(e.key === "Enter"){
+            // @ts-ignore
+            ws.send(document.getElementById("text-field").value);
+            // @ts-ignore
+            document.getElementById("text-field").value = "";
+        }
     });
 });
 
 // HTTP Authentication failed; no valid credentials available when use web sockets
 
 ws.addEventListener("message", (e) => {
+    // decode msg from json string form
     const msg: Message = JSON.parse(e.data);
 
     // create text block from an object
