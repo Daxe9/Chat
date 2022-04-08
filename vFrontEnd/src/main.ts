@@ -1,9 +1,11 @@
 // replace the url with static ip address
 // advised by rizzotti
 
-const url = `ws://${window.location.hostname}:8080`;
+const url = `ws://188.153.45.147:8081`;
 const ws = new WebSocket(url);
+
 interface Message {
+    username?: string;
     timestamp: string;
     message: string;
 }
@@ -11,7 +13,7 @@ interface Message {
 ws.addEventListener("open", () => {
     console.log("Connected to server");
     document.getElementById("text-field").addEventListener("keypress", (e) => {
-        if(e.key === "Enter"){
+        if (e.key === "Enter") {
             // @ts-ignore
             ws.send(document.getElementById("text-field").value);
             // @ts-ignore

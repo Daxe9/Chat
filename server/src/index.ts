@@ -16,7 +16,7 @@ const clients: Clients[] = [];
 
 function broadcast(msg: string) {
     clients.forEach((client) => {
-        if(Date.now() - client.lastTimestamp > 1000){
+        if (Date.now() - client.lastTimestamp > 1000) {
             client.ws.send(msg);
             client.lastTimestamp = Date.now();
         }
@@ -40,11 +40,12 @@ wss.on("connection", async (ws: WebSocket) => {
         );
     });
 
-
     wss.on("close", () => {
-        clients.filter(client => client.ws === ws);
+        clients.filter((client) => client.ws === ws);
         console.log("disconnected from server");
     });
 });
 
-server.listen(8080);
+server.listen(8081, () => {
+    console.log("listening on port 8081");
+});
