@@ -25,8 +25,7 @@ io.on("connection", (socket: Socket) => {
   console.log("connected")
 
   socket.on("msg", (data: Message) =>{
-    // broadcast to all clients except the sender
-    broadcastMessage(data)
+    io.emit('broadcastMessage', data)
   })
 });
 
