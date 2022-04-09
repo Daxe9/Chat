@@ -1,13 +1,19 @@
 import {Pool} from "pg";
 import {DbConfig, Message} from "../types";
 
-export class Database {
+export default class Database {
+    // @ts-ignore
     private pool: Pool;
     private readonly row: string;
 
     constructor(config: DbConfig, rowOfTable: string) {
-        this.pool = new Pool(config);
+        this.connectToDB(config);
         this.row = rowOfTable;
+    }
+
+    public async connectToDB(config: DbConfig): Promise<void> {
+        this.pool = await new Pool(config);
+        console.log("Connected to database");
     }
 
     public async getAllMessage(): Promise<Message[]> {
