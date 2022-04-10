@@ -25,7 +25,7 @@ export default class Database {
 
     public async storeMessage(message: Message): Promise<void> {
         try {
-            await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIME, TO_AUTHOR)
+            await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
                                                VALUES ($1, $2, $3, $4)`, [
                 message.author,
                 message.content,
