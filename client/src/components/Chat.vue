@@ -8,39 +8,34 @@
             :timestamp="message.timestamp"
         />
     </div>
-    <FormInput @userMessage="sendMessage"/>
+    <FormInput @userMessage="sendMessage" />
 </template>
 
 <script lang="ts" setup>
-import TextBlock from "./TextBlock.vue"
-import FormInput from "./FormInput.vue"
-import {MessageBackend} from "../types"
-import {ref} from "vue"
+import TextBlock from "./TextBlock.vue";
+import FormInput from "./FormInput.vue";
+import { MessageBackend } from "../types";
+import { ref } from "vue";
 import SocketManager from "../services/SocketManager";
 
-const messages = ref<MessageBackend[]>([])
-const API = new SocketManager()
+const messages = ref<MessageBackend[]>([]);
+const API = new SocketManager();
 
-listenToEvents()
+listenToEvents();
 
 function sendMessage(msg: MessageBackend): void {
-    msg.timestamp = new Date().toLocaleString()
-    API.sendMessage(msg as MessageBackend)
+    msg.timestamp = new Date().toLocaleString();
+    API.sendMessage(msg as MessageBackend);
 }
-
 
 function listenToEvents() {
     API.socket.once("messageHistory", (msgs: MessageBackend[]) => {
         messages.value = msgs;
-    })
+    });
     API.socket.on("broadcastMessage", (message: MessageBackend) => {
-        messages.value.push(message)
-    })
+        messages.value.push(message);
+    });
 }
-
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

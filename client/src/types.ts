@@ -1,7 +1,7 @@
 export interface Message {
     author: string;
     content: string;
-    to_author: string
+    to_author: string;
 }
 
 export interface MessageBackend extends Message {

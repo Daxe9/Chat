@@ -1,5 +1,5 @@
-import {Pool} from "pg";
-import {DbConfig, Message} from "../types";
+import { Pool } from "pg";
+import { DbConfig, Message } from "../types";
 
 export default class Database {
     // @ts-ignore
@@ -10,8 +10,6 @@ export default class Database {
         this.pool = new Pool(config);
         this.row = rowOfTable;
     }
-
-
 
     public async getAllMessage(): Promise<Message[]> {
         try {
@@ -25,13 +23,16 @@ export default class Database {
 
     public async storeMessage(message: Message): Promise<void> {
         try {
-            await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
-                                               VALUES ($1, $2, $3, $4)`, [
-                message.author,
-                message.content,
-                message.timestamp,
-                message.to_author
-            ]);
+            await this.pool.query(
+                `INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
+                                               VALUES ($1, $2, $3, $4)`,
+                [
+                    message.author,
+                    message.content,
+                    message.timestamp,
+                    message.to_author
+                ]
+            );
         } catch (err) {
             throw err;
         }
@@ -39,9 +40,12 @@ export default class Database {
 
     public async clearAllMessageByName(name: string): Promise<void> {
         try {
-            await this.pool.query(`DELETE
+            await this.pool.query(
+                `DELETE
                                    FROM ${this.row}
-                                   WHERE AUTHOR = $1`, [name]);
+                                   WHERE AUTHOR = $1`,
+                [name]
+            );
         } catch (err) {
             throw err;
         }

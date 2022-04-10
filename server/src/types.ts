@@ -7,9 +7,9 @@ export interface DbConfig {
 }
 
 export interface Message {
-    author_id?: number
-    author: string,
-    content: string,
+    author_id?: number;
+    author: string;
+    content: string;
     timestamp: string;
-    to_author: string
+    to_author: string;
 }

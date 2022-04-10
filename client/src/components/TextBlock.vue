@@ -2,7 +2,8 @@
     <div class="text-block">
         <div class="text-title">
             <div>
-                {{ author }}<h5>@{{ timestamp }}: </h5>
+                {{ author }}
+                <h5>@{{ timestamp }}:</h5>
             </div>
         </div>
         <p class="text">{{ content }}</p>
@@ -10,20 +11,17 @@
 </template>
 
 <script lang="ts" setup>
-
 defineProps<{
-    author: string,
-    timestamp: string,
-    content: string
+    author: string;
+    timestamp: string;
+    content: string;
 }>();
-
 </script>
 
 <style scoped>
 .text-block {
     width: 20vw;
     padding-left: 0.3em;
-
 }
 
 .text-title {
@@ -31,7 +29,7 @@ defineProps<{
     text-align: left;
 }
 .text-block h3,
-.text-block h5{
+.text-block h5 {
     margin: 0;
 }
 .text {
@@ -41,6 +39,7 @@ defineProps<{
     margin-top: 0;
     padding-left: 0.5em;
     border-radius: 2em;
-    width: fit-content;
+    width: 20vw;
+    word-wrap: break-word;
 }
 </style>

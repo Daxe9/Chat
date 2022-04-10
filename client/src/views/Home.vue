@@ -7,6 +7,4 @@
 import Chat from "../components/Chat.vue";
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
