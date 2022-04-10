@@ -3,18 +3,15 @@ import {DbConfig, Message} from "../types";
 
 export default class Database {
     // @ts-ignore
-    private pool: Pool;
+    public pool: Pool;
     private readonly row: string;
 
     constructor(config: DbConfig, rowOfTable: string) {
-        this.connectToDB(config);
+        this.pool = new Pool(config);
         this.row = rowOfTable;
     }
 
-    public async connectToDB(config: DbConfig): Promise<void> {
-        this.pool = await new Pool(config);
-        console.log("Connected to database");
-    }
+
 
     public async getAllMessage(): Promise<Message[]> {
         try {
@@ -28,11 +25,11 @@ export default class Database {
 
     public async storeMessage(message: Message): Promise<void> {
         try {
-            const res = await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIME, TO_AUTHOR)
+            await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIME, TO_AUTHOR)
                                                VALUES ($1, $2, $3, $4)`, [
                 message.author,
                 message.content,
-                new Date().toLocaleString(),
+                message.timestamp,
                 message.to_author
             ]);
         } catch (err) {
@@ -58,10 +55,15 @@ export default class Database {
 //     port: 5432
 // }, "messages");
 // async function main() {
-//     await db.clearAllMessageByName("Davide")
+//     const time = new Date().toLocaleString()
+//     console.log(time.length)
+//     await db.storeMessage({
+//         author: "Xie",
+//         content: "Hello",
+//         to_author: "Xie"
+//     });
 //     const res: Message[] = await db.getAllMessage();
 //     console.log(res)
 //
 // }
-//
 // main();

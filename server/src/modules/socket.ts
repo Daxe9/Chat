@@ -9,10 +9,11 @@ const db = new Database({
     port: parseInt(process.env.DB_PORT!) as number,
     database: process.env.DATABASE as string,
     password: process.env.DB_PASSWORD as string
-}, "messages")
+}, process.env.DB_TABLE as string)
 
 export function webSocket(io: Server) {
     io.on("connection", async (socket: Socket) => {
+        console.log("A user connected");
         // get all message history when connected
         const messageHistory: Message[] = await db.getAllMessage();
         if(messageHistory){
@@ -25,9 +26,11 @@ export function webSocket(io: Server) {
             await db.storeMessage({
                 author: data.author,
                 content: data.content,
+                timestamp: data.timestamp,
                 to_author: data.to_author
             })
 
+            // broadcast
             io.emit('broadcastMessage', data)
         })
     });
