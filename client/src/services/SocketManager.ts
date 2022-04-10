@@ -1,21 +1,21 @@
 import {io} from "socket.io-client"
-
-
-export interface Message {
-    author_id?: number
-    author: string,
-    content: string,
-    to_author: string
-}
-
+import {MessageBackend} from "../types";
+// import {mapActions} from "vuex";
+// const actions = mapActions(["getHistory"])
+// console.log(actions)
 export default class SocketManager {
     private URL: string = `${window.location.hostname}:3002`
-    private socket = io(this.URL);
+    public socket = io(this.URL);
 
     constructor() {
         this.socket.connect();
+
+        // broadcast message and print on the screen
+        // this.socket.on("broadcastMessage", (message: MessageBackend) => {
+        //     console.log(message)
+        // })
     }
-    public sendMessage(message: Message) {
+    public sendMessage(message: MessageBackend) {
         this.socket.emit('msg', message);
     }
 }

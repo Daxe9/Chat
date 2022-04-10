@@ -1,7 +1,10 @@
 export interface Message {
-    author_id?: number
-    author: string,
-    content: string,
-    timestamp: string;
+    author: string;
+    content: string;
     to_author: string
+}
+
+export interface MessageBackend extends Message {
+    author_id?: number;
+    timestamp: string;
 }

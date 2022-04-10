@@ -3,7 +3,6 @@ import {Message} from "../types";
 import Database from "./db";
 import "dotenv/config"
 
-
 const db = new Database({
     user: process.env.DB_USER as string,
     port: parseInt(process.env.DB_PORT!) as number,

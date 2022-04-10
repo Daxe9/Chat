@@ -23,8 +23,9 @@ defineProps<{
 
 <style scoped>
 .text-block {
-    width: 20vw;
-    margin: 0 auto;
+    width: 30vw;
+    padding-left: 0.3em;
+
 }
 
 .text-title {
@@ -36,8 +37,10 @@ defineProps<{
 }
 
 .text {
-    padding-left: 0.3em;
     text-align: left;
-    background-color: #F0F0F0;
+    background-color: #3fb280;
+    padding: 0.3em;
+    padding-left: 0.5em;
+    border-radius: 2em;
 }
 </style>

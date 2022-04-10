@@ -1,38 +1,45 @@
 <template>
-    <TextBlock
-        v-for="(message, i) in messages"
-        :key="i"
-        :author="message.author"
-        :timestamp="message.timestamp"
-        :content="message.content"
-    />
-    <button @click="sendMessage">Click here</button>
+    <div>
+        <TextBlock
+            v-for="(message, i) in messages"
+            :key="i"
+            :author="message.author"
+            :content="message.content"
+            :timestamp="message.timestamp"
+        />
+    </div>
+    <FormInput @userMessage="sendMessage"/>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import TextBlock from "./TextBlock.vue"
-import {Message} from "../types"
+import FormInput from "./FormInput.vue"
+import {MessageBackend} from "../types"
 import {ref} from "vue"
 import SocketManager from "../services/SocketManager";
-const API = new SocketManager()
 
-function sendMessage(): void {
-    API.sendMessage({
-        author: "Davide",
-        timestamp: "2020-01-01",
-        content: "Hello",
-        to_author: "Serena"
-    } as Message)
+const messages = ref<MessageBackend[]>([])
+const API = new SocketManager()
+API.socket.once("messageHistory", (msgs: MessageBackend[]) => {
+    messages.value = msgs;
+
+})
+API.socket.on("broadcastMessage", (message: MessageBackend) => {
+    messages.value.push(message)
+})
+
+function sendMessage(msg: MessageBackend): void {
+    msg.timestamp = new Date().toLocaleString()
+    API.sendMessage(msg as MessageBackend)
 }
+
 // api call
 
-const messages = ref<Message[]>([{
-    author: "Davide",
-    timestamp: "2020-01-01",
-    content: "Hello",
-    to_author: "Serena"
-}])
-
+// watch(store.state.messages, (newVal) => {
+//     // @ts-ignore
+//     messages.value = newVal
+//     console.log(messages.value)
+// })
 </script>
 
 <style scoped>
