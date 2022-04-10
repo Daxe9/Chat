@@ -20,26 +20,25 @@ import SocketManager from "../services/SocketManager";
 
 const messages = ref<MessageBackend[]>([])
 const API = new SocketManager()
-API.socket.once("messageHistory", (msgs: MessageBackend[]) => {
-    messages.value = msgs;
 
-})
-API.socket.on("broadcastMessage", (message: MessageBackend) => {
-    messages.value.push(message)
-})
+listenToEvents()
 
 function sendMessage(msg: MessageBackend): void {
     msg.timestamp = new Date().toLocaleString()
     API.sendMessage(msg as MessageBackend)
 }
 
-// api call
 
-// watch(store.state.messages, (newVal) => {
-//     // @ts-ignore
-//     messages.value = newVal
-//     console.log(messages.value)
-// })
+function listenToEvents() {
+    API.socket.once("messageHistory", (msgs: MessageBackend[]) => {
+        messages.value = msgs;
+    })
+    API.socket.on("broadcastMessage", (message: MessageBackend) => {
+        messages.value.push(message)
+    })
+}
+
+
 </script>
 
 <style scoped>

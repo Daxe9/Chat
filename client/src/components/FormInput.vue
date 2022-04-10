@@ -1,16 +1,16 @@
 <template>
     <form @submit.prevent="sendData">
         <label for="author">Your name: </label>
-        <input id="author" v-model="data.author" type="text" />
+        <input id="author" v-model="data.author" maxlength="19" type="text"/>
         <label for="content">Message: </label>
-        <input id="content" v-model="data.content" type="text" />
+        <input id="content" v-model="data.content" maxlength="254" type="text"/>
         <label for="to_author">To: </label>
-        <input id="to_author" v-model="data.to_author" type="text" />
+        <input id="to_author" v-model="data.to_author" maxlength="19" type="text"/>
         <button type="submit">Submit</button>
     </form>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {reactive} from "vue"
 import {Message} from "../types";
 
@@ -25,13 +25,13 @@ const emits = defineEmits<{
 }>()
 
 function sendData() {
-    if(!data.content) {
+    if (!data.content) {
         return
     }
     if (!data.author) {
         data.author = "Anonymous"
     }
-    if(!data.to_author) {
+    if (!data.to_author) {
         data.to_author = "Everyone"
     }
 
@@ -43,7 +43,3 @@ function sendData() {
 }
 
 </script>
-
-<style scoped>
-
-</style>

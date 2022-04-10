@@ -9,11 +9,6 @@ export default class SocketManager {
 
     constructor() {
         this.socket.connect();
-
-        // broadcast message and print on the screen
-        // this.socket.on("broadcastMessage", (message: MessageBackend) => {
-        //     console.log(message)
-        // })
     }
     public sendMessage(message: MessageBackend) {
         this.socket.emit('msg', message);

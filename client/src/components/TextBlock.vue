@@ -1,12 +1,10 @@
 <template>
     <div class="text-block">
         <div class="text-title">
-            <h3>
-                {{ author }}:
-            </h3>
-            <h5>{{ timestamp }}</h5>
+            <div>
+                {{ author }}<h5>@{{ timestamp }}: </h5>
+            </div>
         </div>
-
         <p class="text">{{ content }}</p>
     </div>
 </template>
@@ -23,24 +21,26 @@ defineProps<{
 
 <style scoped>
 .text-block {
-    width: 30vw;
+    width: 20vw;
     padding-left: 0.3em;
 
 }
 
 .text-title {
-    height: 2em;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
+    text-align: left;
 }
-
+.text-block h3,
+.text-block h5{
+    margin: 0;
+}
 .text {
     text-align: left;
     background-color: #3fb280;
-    padding: 0.3em;
+    padding: 5%;
+    margin-top: 0;
     padding-left: 0.5em;
     border-radius: 2em;
+    width: fit-content;
 }
 </style>
