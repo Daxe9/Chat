@@ -1,5 +1,6 @@
 <template>
     <div>
+        <FormInput @userMessage="sendMessage" />
         <TextBlock
             v-for="(message, i) in messages"
             :key="i"
@@ -8,7 +9,6 @@
             :timestamp="message.timestamp"
         />
     </div>
-    <FormInput @userMessage="sendMessage" />
 </template>
 
 <script lang="ts" setup>
