@@ -28,9 +28,11 @@ export function webSocket(io: Server) {
                 timestamp: data.timestamp,
                 to_author: data.to_author
             })
-
             // broadcast
             io.emit('broadcastMessage', data)
+        })
+        socket.on("disconnect", () => {
+            console.log("A user disconnected");
         })
     });
 }
