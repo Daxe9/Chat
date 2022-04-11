@@ -1,5 +1,7 @@
 CREATE DATABASE chatroom;
 
+\c chatroom
+
 CREATE TABLE messages (
     MESSAGE_ID SERIAL PRIMARY KEY,
     AUTHOR VARCHAR(20),
