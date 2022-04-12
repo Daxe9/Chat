@@ -53,6 +53,8 @@ function clearAllMessage(socket: Socket) {
     });
 }
 
+
+
 export function webSocket(io: Server) {
     io.on("connection", async (socket: Socket) => {
         await getHistory(socket);
