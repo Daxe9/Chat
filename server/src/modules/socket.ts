@@ -18,7 +18,7 @@ const db = new Database(
 // handle message history
 async function getHistory(socket: Socket) {
     // get all message history when connected
-    const messageHistory: Message[] = await db.getAllMessage();
+    const messageHistory: Message[] | void = await db.getAllMessage();
     if (messageHistory) {
         socket.emit("messageHistory", messageHistory);
     }
@@ -31,6 +31,7 @@ function disconnection(socket: Socket) {
     });
 }
 
+// handle incoming messages
 function handleMessage(io: Server, socket: Socket) {
     // waiting for message and then broadcast it
     socket.on("msg", async (data: Message) => {
@@ -54,8 +55,6 @@ function clearAllMessage(socket: Socket) {
 
 export function webSocket(io: Server) {
     io.on("connection", async (socket: Socket) => {
-        console.log("A user connected");
-
         await getHistory(socket);
         handleMessage(io, socket);
         clearAllMessage(socket);

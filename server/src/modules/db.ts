@@ -1,56 +1,54 @@
-import { Pool } from "pg";
-import { DbConfig, Message } from "../utils";
+import {Pool} from "pg";
+import {DbConfig, loggerError, loggerInfo, Message} from "../utils";
 
 export default class Database {
-    // @ts-ignore
     public pool: Pool;
-    private readonly row: string;
+    public readonly row: string;
 
     constructor(config: DbConfig, rowOfTable: string) {
-        this.pool = new Pool(config);
-        this.row = rowOfTable;
+        try{
+            this.pool = new Pool(config);
+            this.row = rowOfTable;
+
+            loggerInfo.info({message: "Connection established", ...this.pool});
+        } catch (e: any) {
+            loggerError.error({message: "Connection failed", ...e});
+        }
+
     }
 
-    public async getAllMessage(): Promise<Message[]> {
+    public async getAllMessage(): Promise<Message[] | void> {
         try {
             const res = await this.pool.query(`SELECT *
                                                FROM ${this.row}`);
             return res.rows;
-        } catch (err) {
-            throw err;
+        } catch (err: any) {
+            loggerError.error({message: err.message, ...err})
         }
     }
 
     public async storeMessage(message: Message): Promise<void> {
         try {
-            await this.pool.query(
-                `INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
-                                               VALUES ($1, $2, $3, $4)`,
-                [
-                    message.author,
-                    message.content,
-                    message.timestamp,
-                    message.to_author
-                ]
-            );
-        } catch (err) {
-            throw err;
+            await this.pool.query(`INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
+                                   VALUES ($1, $2, $3,
+                                           $4)`, [message.author, message.content, message.timestamp, message.to_author]);
+        } catch (err: any) {
+            loggerError.error({message: err.message, ...err});
         }
     }
 
     public async clearAllMessageByName(name: string): Promise<void> {
         try {
-            await this.pool.query(
-                `DELETE
+            await this.pool.query(`DELETE
                                    FROM ${this.row}
-                                   WHERE AUTHOR = $1`,
-                [name]
-            );
-        } catch (err) {
-            throw err;
+                                   WHERE AUTHOR = $1`, [name]);
+        } catch (err: any) {
+            loggerError.error({message: err.message, ...err});
         }
     }
 }
+
+
 
 // const db = new Database({
 //     user: "postgres",

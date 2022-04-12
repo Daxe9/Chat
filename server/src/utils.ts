@@ -1,4 +1,27 @@
-export interface DbConfig {
+import {createLogger, format, transports} from "winston";
+
+const loggerError = createLogger({
+    level: "error",
+    format: format.json(),
+    transports: [
+        new transports.File({filename: "../logs/error.log", level: "error"}),
+    ]
+})
+
+const loggerInfo = createLogger({
+    level: "info",
+    format: format.json(),
+    transports: [
+        new transports.File({filename: "../logs/info.log", level: "info"}),
+    ]
+})
+
+if (process.env.NODE_ENV !== "production") {
+    loggerError.add(new transports.Console())
+    loggerInfo.add(new transports.Console())
+}
+
+interface DbConfig {
     user: string;
     database: string;
     password: string;
@@ -6,7 +29,7 @@ export interface DbConfig {
     host?: string;
 }
 
-export interface Message {
+interface Message {
     author_id?: number;
     author: string;
     content: string;
@@ -15,7 +38,7 @@ export interface Message {
 }
 
 // TODO: resolve the problem of accessing class member from decorator and asynchrons function
-export const Catch = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+const Catch = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const originalF = descriptor.value;
     descriptor.value = (...args: any[]) => {
         try {
@@ -25,4 +48,11 @@ export const Catch = (target: any, propertyKey: string, descriptor: PropertyDesc
         }
 
     }
+}
+
+export {
+    loggerError,
+    loggerInfo,
+    DbConfig,
+    Message
 }
