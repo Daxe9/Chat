@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { DbConfig, Message } from "../types";
+import { DbConfig, Message } from "../utils";
 
 export default class Database {
     // @ts-ignore

@@ -20,7 +20,6 @@ import SocketManager from "../services/SocketManager";
 
 const messages = ref<MessageBackend[]>([]);
 const API = new SocketManager();
-
 listenToEvents();
 
 function sendMessage(msg: MessageBackend): void {

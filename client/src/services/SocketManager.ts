@@ -2,7 +2,8 @@ import { io } from "socket.io-client";
 import { MessageBackend } from "../types";
 
 export default class SocketManager {
-    private URL: string = `${window.location.hostname}:3002`;
+    private readonly port = 3002
+    private URL: string = `${window.location.hostname}:${this.port}`
     public socket = io(this.URL);
 
     constructor() {
@@ -10,5 +11,8 @@ export default class SocketManager {
     }
     public sendMessage(message: MessageBackend) {
         this.socket.emit("msg", message);
+    }
+    public clearMessagesByName(name: string) {
+        this.socket.emit("clearAllMessage", name);
     }
 }

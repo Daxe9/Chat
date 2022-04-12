@@ -1,8 +1,10 @@
-import { Server, Socket } from "socket.io";
-import { Message } from "../types";
+import {Server, Socket} from "socket.io";
+import {Message} from "../utils";
 import Database from "./db";
-import "dotenv/config";
+import {resolve} from "path";
+import dotenv from "dotenv";
 
+dotenv.config({path: resolve(__dirname, "../../.env")});
 const db = new Database(
     {
         user: process.env.DB_USER as string,

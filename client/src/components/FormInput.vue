@@ -8,18 +8,18 @@
             <label class="placeholder" for="name">Your name</label>
         </div>
         <div class="input-container ic2">
-            <input id="lastname" v-model="data.content" class="input"
-                   maxlength="254" placeholder=" " type="text"/>
+            <input id="message" v-model="data.content" class="input"
+                   maxlength="254" placeholder=" " type="text" required />
             <div class="cut"></div>
-            <label class="placeholder" for="lastname">Message</label>
+            <label class="placeholder" for="message">Message</label>
         </div>
         <div class="input-container ic2">
-            <input id="email" v-model="data.to_author" class="input"
+            <input id="receiver" v-model="data.to_author" class="input"
                    maxlength="19" placeholder=" " type="text"/>
             <div class="cut cut-short"></div>
-            <label class="placeholder" for="email">Receiver's name</label>
+            <label class="placeholder" for="receiver">Receiver's name</label>
         </div>
-        <button class="submit" type="submit">Submit</button>
+        <button class="submit" type="submit" @click.prevent="sendData">Submit</button>
     </form>
 </template>
 
