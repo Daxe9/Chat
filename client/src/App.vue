@@ -1,8 +1,15 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup>
+import {useStore} from "vuex";
+const store = useStore();
+const username: string | null = localStorage.getItem("username");
+if (username) {
+    store.dispatch("login", username);
+}
+</script>
 
 <template>
     <div id="app">
-        <router-view />
+        <router-view/>
     </div>
 </template>
 

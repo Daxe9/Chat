@@ -1,18 +1,18 @@
-import { createStore } from "vuex";
-import { MessageBackend } from "../types";
+import {createStore} from "vuex";
 
 export default createStore({
     state: {
-        messages: [] as MessageBackend[] | null
+        username: "",
     },
     mutations: {
-        SET_MESSAGE_HISTORY(state, messages: MessageBackend[]) {
-            state.messages = messages;
-        }
+        SET_USERNAME(state, username: string) {
+            state.username = username;
+            localStorage.setItem("username", username);
+        },
     },
     actions: {
-        getHistory({ commit }, payload) {
-            commit("SET_MESSAGE_HISTORY", payload);
-        }
+        login({commit}, username: string) {
+            commit("SET_USERNAME", username);
+        },
     }
 });
