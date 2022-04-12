@@ -50,9 +50,19 @@ const Catch = (target: any, propertyKey: string, descriptor: PropertyDescriptor)
     }
 }
 
+function handleUncaughtExceptions() {
+    process.on("uncaughtException", (error: Error) => {
+        loggerError.error(error.message);
+    })
+    process.on("unhandledRejection", (error: Error) => {
+        loggerError.error(error.message);
+    })
+}
+
 export {
     loggerError,
     loggerInfo,
+    handleUncaughtExceptions,
     DbConfig,
     Message
 }
