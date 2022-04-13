@@ -1,6 +1,13 @@
 <template>
     <div>
-        <FormInput @userMessage="sendMessage" />
+        <div class="user-list">
+            <UserState
+                v-for="(user, index) in userList"
+                :username="user.username"
+            />
+        </div>
+        <FormInput @userMessage="sendMessage"/>
+
         <TextBlock
             v-for="(message, i) in messages"
             :key="i"
@@ -14,13 +21,51 @@
 <script lang="ts" setup>
 import TextBlock from "./TextBlock.vue";
 import FormInput from "./FormInput.vue";
-import { MessageBackend } from "../types";
-import { ref } from "vue";
+import {MessageBackend} from "../types";
+import {onUnmounted, ref} from "vue";
 import SocketManager from "../services/SocketManager";
+import {useStore} from "vuex";
+import UserState from "../components/UserState.vue";
 
-// const messages = ref<MessageBackend[]>([]);
-// const API = new SocketManager();
-// listenToEvents();
+const store = useStore();
+const messages = ref<MessageBackend[]>([]);
+const API = new SocketManager();
+const username = store.state.username;
+const userList = ref<User[]>([])
+API.socket.auth = {username};
+API.connectToDB();
+listenToEvents();
+
+interface User {
+    userID: string;
+    username: string;
+    self?: boolean
+}
+
+API.socket.on("userList", (users: User[]) => {
+    users.forEach((user) => {
+        user.self = user.userID === API.socket.id;
+    });
+    // put the current user first, and then sort by username
+    users = users.sort((a, b) => {
+        if (a.self) return -1;
+        if (b.self) return 1;
+        if (a.username < b.username) return -1;
+        return a.username > b.username ? 1 : 0;
+    });
+    console.log(users)
+    userList.value = users;
+});
+API.socket.on("newUserConnection", (user: User) => {
+    userList.value.push(user)
+    console.log(userList.value)
+});
+
+
+onUnmounted(() => {
+    API.socket.off("connect_error")
+});
+
 
 function sendMessage(msg: MessageBackend): void {
     msg.timestamp = new Date().toLocaleString();
@@ -28,6 +73,14 @@ function sendMessage(msg: MessageBackend): void {
 }
 
 function listenToEvents() {
+    API.socket.on("connect_error", (err) => {
+        if (err.message === "Authentication error") {
+            store.dispatch("logout");
+        } else {
+            // generic error
+            console.log("Could not connect to server");
+        }
+    });
     API.socket.once("messageHistory", (msgs: MessageBackend[]) => {
         messages.value = msgs;
     });
@@ -37,4 +90,10 @@ function listenToEvents() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.user-list {
+    display: flex;
+    flex-direction: row;
+}
+
+</style>

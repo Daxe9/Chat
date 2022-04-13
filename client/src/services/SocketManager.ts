@@ -6,9 +6,12 @@ export default class SocketManager {
     private URL: string = `${window.location.hostname}:${this.port}`
     public socket = io(this.URL);
 
-    constructor() {
+    constructor() {}
+
+    public connectToDB() {
         this.socket.connect();
     }
+
     public sendMessage(message: MessageBackend) {
         this.socket.emit("msg", message);
     }

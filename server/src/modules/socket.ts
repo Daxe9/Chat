@@ -4,6 +4,15 @@ import Database from "./db";
 import {resolve} from "path";
 import dotenv from "dotenv";
 
+interface AuthSocket extends Socket {
+    username?: string
+}
+
+interface User {
+    userID: string;
+    username: string;
+}
+
 dotenv.config({path: resolve(__dirname, "../../.env")});
 const db = new Database(
     {
@@ -47,19 +56,59 @@ function handleMessage(io: Server, socket: Socket) {
     });
 }
 
+function catchAll(socket: Socket) {
+
+    socket.onAny((event: string, ...args: any[]) => {
+        console.log(`event: ${event}`);
+        console.log(`args: ${args}`);
+    });
+}
+
 function clearAllMessage(socket: Socket) {
     socket.on("clearAllMessage", async (name: string) => {
         await db.clearAllMessageByName(name);
     });
 }
 
+function processUsername(socket: AuthSocket, next: Function): void {
+    const username = socket.handshake.auth.username;
+    if (!username) {
+        return next(new Error("Authentication error"));
+    }
+    socket.username = username;
+    next();
+}
 
 
 export function webSocket(io: Server) {
+    io.use(processUsername);
     io.on("connection", async (socket: Socket) => {
+        console.log("A user connected");
+        const users: User[] = [];
+
+        for(let [id, socket] of io.of("/").sockets) {
+            users.push({
+                userID: id,
+                // @ts-ignore
+                username: socket.username
+            } as User);
+        }
+
+        socket.broadcast.emit("newUserConnection", {
+            userID: socket.id,
+            // @ts-ignore
+            username: socket.username
+        } as User);
+
+        socket.emit("userList", users);
         await getHistory(socket);
         handleMessage(io, socket);
         clearAllMessage(socket);
-        disconnection(socket);
+        catchAll(socket);
+        // disconnection(socket);
+        socket.on("disconnect", () => {
+            users.filter(user => user.userID !== socket.id)
+            console.log("A user has disconnected");
+        });
     });
 }
