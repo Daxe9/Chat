@@ -1,4 +1,5 @@
 import {createStore} from "vuex";
+import {ContactType} from "../types";
 
 export default createStore({
     state: {
@@ -19,7 +20,8 @@ export default createStore({
                 username: "Marco",
                 self: true
             },
-        ]
+        ],
+        currentContact: {} as ContactType
     },
     mutations: {
         SET_USERNAME(state, username: string) {

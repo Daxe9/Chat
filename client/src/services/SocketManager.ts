@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
 import { MessageBackend, ContactType } from "../types";
-export class SocketManager {
-    private readonly port = 3002
+class SocketManager {
+    private readonly port: number = 3002
     private URL: string = `${window.location.hostname}:${this.port}`
     // @ts-ignore
-    public socket;
+    public socket = io(this.URL);
     public userList: ContactType[] = [
         {
             userID: "1",
@@ -24,11 +24,13 @@ export class SocketManager {
     ];
     // @ts-ignore
     public currentContact: ContactType;
-    constructor() {}
 
-    public connectToDB() {
-        this.socket = io(this.URL);
-        this.socket.connect();
+    public async connectToDB() {
+        try{
+            await this.socket.connect();
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     public sendMessage(message: MessageBackend) {
@@ -41,5 +43,13 @@ export class SocketManager {
         this.userList = userList;
     }
 }
-
+export class Test {
+    private readonly port: number = 3002
+    private URL: string = `${window.location.hostname}:${this.port}`
+    // @ts-ignore
+    public socket = io(this.URL);
+    constructor() {
+        this.socket.connect()
+    }
+}
 export const API = new SocketManager();

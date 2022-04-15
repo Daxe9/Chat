@@ -111,6 +111,7 @@ export function webSocket(io: Server) {
 
         socket.emit("userList", users);
         await getHistory(socket);
+        privateMessage(socket);
         handleMessage(io, socket);
         clearAllMessage(socket);
         catchAll(socket);

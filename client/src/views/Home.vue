@@ -12,9 +12,16 @@ import SideBar from "../components/SideBar.vue";
 import GlobalChat from "./GlobalChat.vue";
 import {useStore} from "vuex";
 import {ref} from "vue";
+import {API} from "../services/SocketManager"
 
 const store = useStore();
+const username = store.state.username
+API.socket.auth = {username}
+
 const contacts = ref(store.state.contacts);
+
+// API.socket.auth = store.state.username;
+API.connectToDB();
 
 </script>
 

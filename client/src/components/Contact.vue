@@ -8,7 +8,6 @@
 
 <script setup lang="ts">
 import {ContactType} from "../types";
-import PrivateChat from "../views/PrivateChat.vue";
 
 defineProps<{
   contact: ContactType;
