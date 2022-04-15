@@ -59,8 +59,8 @@ function handleMessage(io: Server, socket: Socket) {
 function catchAll(socket: Socket) {
 
     socket.onAny((event: string, ...args: any[]) => {
-        console.log(`event: ${event}`);
-        console.log(`args: ${args}`);
+        // console.log(`event: ${event}`);
+        // console.log(`args: ${args}`);
     });
 }
 

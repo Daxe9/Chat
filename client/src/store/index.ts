@@ -3,6 +3,23 @@ import {createStore} from "vuex";
 export default createStore({
     state: {
         username: "",
+        contacts: [
+            {
+                userID: "1",
+                username: "Davide",
+                self: true
+            },
+            {
+                userID: "2",
+                username: "Giovanni",
+                self: true
+            },
+            {
+                userID: "3",
+                username: "Marco",
+                self: true
+            },
+        ]
     },
     mutations: {
         SET_USERNAME(state, username: string) {

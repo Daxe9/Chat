@@ -1,11 +1,5 @@
 <template>
     <div>
-        <div class="user-list">
-            <UserState
-                v-for="(user, index) in userList"
-                :username="user.username"
-            />
-        </div>
         <FormInput @userMessage="sendMessage"/>
 
         <TextBlock
@@ -21,17 +15,16 @@
 <script lang="ts" setup>
 import TextBlock from "./TextBlock.vue";
 import FormInput from "./FormInput.vue";
-import {MessageBackend} from "../types";
+import {MessageBackend, ContactType} from "../types";
 import {onUnmounted, ref} from "vue";
-import SocketManager from "../services/SocketManager";
+import {API} from "../services/SocketManager";
 import {useStore} from "vuex";
 import UserState from "../components/UserState.vue";
 
 const store = useStore();
 const messages = ref<MessageBackend[]>([]);
-const API = new SocketManager();
 const username = store.state.username;
-const userList = ref<User[]>([])
+const userList = ref<ContactType[]>([])
 API.socket.auth = {username};
 API.connectToDB();
 listenToEvents();
@@ -42,7 +35,7 @@ interface User {
     self?: boolean
 }
 
-API.socket.on("userList", (users: User[]) => {
+API.socket.on("userList", (users: ContactType[]) => {
     users.forEach((user) => {
         user.self = user.userID === API.socket.id;
     });
@@ -56,7 +49,7 @@ API.socket.on("userList", (users: User[]) => {
     console.log(users)
     userList.value = users;
 });
-API.socket.on("newUserConnection", (user: User) => {
+API.socket.on("newUserConnection", (user: ContactType) => {
     userList.value.push(user)
     console.log(userList.value)
 });
@@ -73,7 +66,7 @@ function sendMessage(msg: MessageBackend): void {
 }
 
 function listenToEvents() {
-    API.socket.on("connect_error", (err) => {
+    API.socket.on("connect_error", (err: any) => {
         if (err.message === "Authentication error") {
             store.dispatch("logout");
         } else {
@@ -87,13 +80,21 @@ function listenToEvents() {
     API.socket.on("broadcastMessage", (message: MessageBackend) => {
         messages.value.push(message);
     });
+
+
+    API.socket.emit("emitPrivateMessage", {
+
+    })
 }
+
+
+
 </script>
 
 <style scoped>
 .user-list {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 </style>

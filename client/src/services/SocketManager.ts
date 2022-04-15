@@ -1,14 +1,31 @@
 import { io } from "socket.io-client";
-import { MessageBackend } from "../types";
-
-export default class SocketManager {
+import { MessageBackend, ContactType } from "../types";
+export class SocketManager {
     private readonly port = 3002
     private URL: string = `${window.location.hostname}:${this.port}`
-    public socket = io(this.URL);
-
+    // @ts-ignore
+    public socket;
+    public userList: ContactType[] = [
+        {
+            userID: "1",
+            username: "Davide",
+            self: true
+        },
+        {
+            userID: "2",
+            username: "Giovanni",
+            self: true
+        },
+        {
+            userID: "3",
+            username: "Marco",
+            self: true
+        },
+    ];
     constructor() {}
 
     public connectToDB() {
+        this.socket = io(this.URL);
         this.socket.connect();
     }
 
@@ -18,4 +35,9 @@ export default class SocketManager {
     public clearMessagesByName(name: string) {
         this.socket.emit("clearAllMessage", name);
     }
+    public setUserList(userList: ContactType[]) {
+        this.userList = userList;
+    }
 }
+
+export const API = new SocketManager();
