@@ -1,15 +1,17 @@
 <template>
     <div>
-        <h2>{{contact.username}}</h2>
+        <h2>{{user.username}}</h2>
+        <router-link :to="{name: 'Home'}" >Back to Home</router-link>
+        <FormInput />
     </div>
 </template>
 
 <script setup lang="ts">
-import {ContactType} from "../types";
+import {API} from "../services/SocketManager";
+import FormInput from "../components/FormInput.vue";
+const user = API.currentContact
 
-defineProps<{
-    contact: ContactType
-}>()
+
 </script>
 
 <style scoped>

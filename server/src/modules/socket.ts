@@ -25,7 +25,7 @@ const db = new Database(
 );
 
 // handle message history
-async function getHistory(socket: Socket) {
+async function getHistory(socket: Socket):Promise<void> {
     // get all message history when connected
     const messageHistory: Message[] | void = await db.getAllMessage();
     if (messageHistory) {
@@ -34,14 +34,14 @@ async function getHistory(socket: Socket) {
 }
 
 // handle disconnection
-function disconnection(socket: Socket) {
+function disconnection(socket: Socket): void {
     socket.on("disconnect", () => {
         console.log("A user disconnected");
     });
 }
 
 // handle incoming messages
-function handleMessage(io: Server, socket: Socket) {
+function handleMessage(io: Server, socket: Socket): void {
     // waiting for message and then broadcast it
     socket.on("msg", async (data: Message) => {
         // store message into db
@@ -56,7 +56,16 @@ function handleMessage(io: Server, socket: Socket) {
     });
 }
 
-function catchAll(socket: Socket) {
+function privateMessage(socket: Socket):void {
+    socket.on("privateMessage", ({content, to}: any) => {
+        socket.to(to).emit("privateMessage", {
+            content,
+            from: socket.id
+        })
+    })
+}
+
+function catchAll(socket: Socket): void {
 
     socket.onAny((event: string, ...args: any[]) => {
         // console.log(`event: ${event}`);
@@ -64,7 +73,7 @@ function catchAll(socket: Socket) {
     });
 }
 
-function clearAllMessage(socket: Socket) {
+function clearAllMessage(socket: Socket): void {
     socket.on("clearAllMessage", async (name: string) => {
         await db.clearAllMessageByName(name);
     });

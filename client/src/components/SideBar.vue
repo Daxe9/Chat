@@ -26,7 +26,6 @@ defineProps<{
     background-color: #445760;
     color: #fff;
     height: 100%;
-    width: 20vw;
 }
 
 </style>

@@ -22,6 +22,8 @@ export class SocketManager {
             self: true
         },
     ];
+    // @ts-ignore
+    public currentContact: ContactType;
     constructor() {}
 
     public connectToDB() {

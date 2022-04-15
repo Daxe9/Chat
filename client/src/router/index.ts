@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import ContactChat from "../views/ContactChat.vue";
 import {ContactType} from "../types";
 import {API} from "../services/SocketManager";
+
 const routes = [
     {
         path: "/",
@@ -24,9 +25,10 @@ const routes = [
             const contact: ContactType | undefined = API.userList.find(user => {
                 return user.userID === id;
             });
-            if(!contact) {
-
+            if (!contact) {
+                return false;
             }
+            API.currentContact = contact;
         }
     }
 ];

@@ -1,23 +1,34 @@
 <template>
-    <div>
-        <SideBar :contacts="contacts"/>
-        <button @click="logout">log out</button>
+    <div id="home">
+        <SideBar
+            id="side-bar"
+            :contacts="contacts"/>
+        <GlobalChat id="global-chat"/>
     </div>
 </template>
 
 <script lang="ts" setup>
 import SideBar from "../components/SideBar.vue";
+import GlobalChat from "./GlobalChat.vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 import {ref} from "vue";
 
 const store = useStore();
-const router = useRouter();
 const contacts = ref(store.state.contacts);
-function logout(): void {
-    store.dispatch("logout");
-    router.push({name: "Login"});
-}
+
 </script>
 
-<style scoped></style>
+<style scoped>
+#home {
+    display: flex;
+    flex-direction: row;
+    width: 100%
+}
+
+#side-bar {
+    flex: 0 1 20%;
+}
+#global-chat {
+    flex: 0 1 80%;
+}
+</style>
