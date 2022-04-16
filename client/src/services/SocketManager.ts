@@ -26,11 +26,7 @@ class SocketManager {
     public currentContact: ContactType;
 
     public async connectToDB() {
-        try{
-            await this.socket.connect();
-        } catch (e) {
-            console.log(e)
-        }
+       this.socket.connect();
     }
 
     public sendMessage(message: MessageBackend) {

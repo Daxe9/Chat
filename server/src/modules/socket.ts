@@ -44,6 +44,8 @@ function disconnection(socket: Socket): void {
 function handleMessage(io: Server, socket: Socket): void {
     // waiting for message and then broadcast it
     socket.on("msg", async (data: Message) => {
+
+
         // store message into db
         await db.storeMessage({
             author: data.author,
