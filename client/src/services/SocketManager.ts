@@ -5,23 +5,7 @@ class SocketManager {
     private URL: string = `${window.location.hostname}:${this.port}`
     // @ts-ignore
     public socket = io(this.URL);
-    public userList: ContactType[] = [
-        {
-            userID: "1",
-            username: "Davide",
-            self: true
-        },
-        {
-            userID: "2",
-            username: "Giovanni",
-            self: true
-        },
-        {
-            userID: "3",
-            username: "Marco",
-            self: true
-        },
-    ];
+    public userList: ContactType[] = [];
     // @ts-ignore
     public currentContact: ContactType;
 

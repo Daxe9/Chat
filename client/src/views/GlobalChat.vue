@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="global-chat">
         <h1>Global chat</h1>
         <FormInput @userMessage="userMessage" />
         <TextBlock
@@ -46,5 +46,7 @@ function userMessage({content}: {content: string}) {
 </script>
 
 <style scoped>
-
+#global-chat {
+    height: 100vh;
+}
 </style>

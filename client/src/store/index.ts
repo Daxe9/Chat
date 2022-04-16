@@ -4,23 +4,7 @@ import {ContactType} from "../types";
 export default createStore({
     state: {
         username: "",
-        contacts: [
-            {
-                userID: "1",
-                username: "Davide",
-                self: true
-            },
-            {
-                userID: "2",
-                username: "Giovanni",
-                self: true
-            },
-            {
-                userID: "3",
-                username: "Marco",
-                self: true
-            },
-        ],
+        contacts: [] as ContactType[],
         currentContact: {} as ContactType
     },
     mutations: {
@@ -31,7 +15,7 @@ export default createStore({
         UNSET_USERNAME(state) {
             state.username = "";
             localStorage.removeItem("username");
-        },
+        }
     },
     actions: {
         login({commit}, username: string) {

@@ -11,13 +11,12 @@
 </template>
 
 <script lang="ts" setup>
-import {ContactType} from "../types";
 import Contact from "./Contact.vue";
+import {API} from "../services/SocketManager"
+import {ref} from "vue";
 
-defineProps<{
-    contacts: ContactType[];
-}>();
-
+const contacts = ref(API.userList)
+console.log("here")
 </script>
 
 <style scoped>
