@@ -16,7 +16,6 @@ import {API} from "../services/SocketManager"
 import {ref} from "vue";
 
 const contacts = ref(API.userList)
-console.log("here")
 </script>
 
 <style scoped>

@@ -9,7 +9,6 @@ import {ContactType} from "./types";
 const store = useStore();
 const router = useRouter();
 const username: string | null = localStorage.getItem("username");
-const isConnected = ref<boolean>(false);
 
 if (username) {
     store.dispatch("login", username);
@@ -24,31 +23,6 @@ if (username) {
             console.log("Could not connect to server");
         }
     });
-    API.socket.on("userList", (users: ContactType[]) => {
-        users.forEach((user) => {
-            user.self = user.userID === API.socket.id;
-        });
-        // put the current user first, and then sort by username
-        users = users.sort((a, b) => {
-            if (a.self) return -1;
-            if (b.self) return 1;
-            if (a.username < b.username) return -1;
-            return a.username > b.username ? 1 : 0;
-        });
-        API.userList = users;
-        store.state.contacts = users;
-        console.log("set all users")
-        isConnected.value = true;
-    });
-
-    // handler new user connection
-    API.socket.on("newUserConnection", (user: ContactType) => {
-        user.self = false;
-        API.userList.push(user);
-        store.state.contacts.push(user);
-        console.log("set new users")
-    });
-
 } else {
     router.push("/login");
 }
@@ -61,7 +35,7 @@ onUnmounted(() => {
 
 <template>
     <div id="app">
-        <router-view v-if="isConnected" />
+        <router-view  />
     </div>
 </template>
 

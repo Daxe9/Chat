@@ -59,13 +59,15 @@ function handleMessage(io: Server, socket: Socket): void {
 }
 
 function privateMessage(socket: Socket):void {
-    socket.on("privateMessage", ({content, to}: any) => {
+    socket.on("privateMessage", ({content, to}: { content: Message, to: any}) => {
+        console.log(content);
         socket.to(to).emit("privateMessage", {
             content,
             from: socket.id
         })
     })
 }
+
 
 function catchAll(socket: Socket): void {
 
