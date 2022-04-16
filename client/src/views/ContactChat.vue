@@ -31,15 +31,18 @@ API.socket.on("privateMessage", ({content, from }) => {
 
 function userMessage(data: {content: string}): void {
     if(receiver){
+        const message: MessageBackend = {
+            author: store.state.username,
+            content: data.content,
+            to_author: receiver.username,
+            timestamp: new Date().toLocaleString()
+        }
         API.socket.emit("privateMessage", {
-            content: {
-                author: store.state.username,
-                content: data.content,
-                to_author: receiver.username,
-                timestamp: new Date().toLocaleString()
-            } as MessageBackend,
+            content: message,
             to: route.params.id
         });
+        // @ts-ignore
+        privateMessages.value.push(message)
     }
 }
 </script>
