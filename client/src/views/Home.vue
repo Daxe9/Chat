@@ -1,6 +1,6 @@
 <template>
     <div id="home" v-if="isConnected">
-        <SideBar id="side-bar" />
+        <SideBar v-if="hasContact" id="side-bar" />
         <GlobalChat id="global-chat" />
     </div>
 </template>
@@ -8,16 +8,30 @@
 <script lang="ts" setup>
 import SideBar from "../components/SideBar.vue";
 import GlobalChat from "./GlobalChat.vue";
-import {useStore} from "vuex";
-import {API} from "../services/SocketManager"
-import {ContactType} from "../types";
-import {ref} from "vue";
+import { useStore } from "vuex";
+import { API } from "../services/SocketManager";
+import { ContactType } from "../types";
+import { ref } from "vue";
 
-const store = useStore()
+const store = useStore();
 const isConnected = ref<boolean>(API.isConnected);
+const username = store.state.username;
+const hasContact = ref<boolean>(false);
+
+API.socket.auth = { username };
+API.connectToDB();
+// connection error
+API.socket.on("connect_error", (err: any) => {
+    if (err.message === "Authentication error") {
+        store.dispatch("logout");
+    } else {
+        // generic error
+        console.log("Could not connect to server");
+    }
+});
 
 API.socket.on("userList", (users: ContactType[]) => {
-    console.log("received userList")
+    console.log("received userList");
     users.forEach((user) => {
         user.self = user.userID === API.socket.id;
     });
@@ -31,6 +45,7 @@ API.socket.on("userList", (users: ContactType[]) => {
     API.userList = users;
     isConnected.value = true;
     API.isConnected = true;
+    hasContact.value = true;
     store.state.contacts = users;
 });
 
@@ -39,9 +54,8 @@ API.socket.on("newUserConnection", (user: ContactType) => {
     user.self = false;
     API.userList.push(user);
     store.state.contacts.push(user);
-    console.log("set new users")
+    console.log("set new users");
 });
-
 </script>
 
 <style scoped>

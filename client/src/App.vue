@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import {useStore} from "vuex";
-import {useRouter} from "vue-router";
-import {API} from "./services/SocketManager"
-import {onUnmounted, ref} from "vue";
-import {ContactType} from "./types";
-
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { API } from "./services/SocketManager";
+import { onUnmounted, ref } from "vue";
+import { ContactType } from "./types";
 
 const store = useStore();
 const router = useRouter();
@@ -12,30 +11,18 @@ const username: string | null = localStorage.getItem("username");
 
 if (username) {
     store.dispatch("login", username);
-    API.socket.auth = {username}
-    API.connectToDB();
-    // connection error
-    API.socket.on("connect_error", (err: any) => {
-        if (err.message === "Authentication error") {
-            store.dispatch("logout");
-        } else {
-            // generic error
-            console.log("Could not connect to server");
-        }
-    });
 } else {
     router.push("/login");
 }
 
-
 onUnmounted(() => {
-    API.socket.off("connect_error")
+    API.socket.off("connect_error");
 });
 </script>
 
 <template>
     <div id="app">
-        <router-view  />
+        <router-view />
     </div>
 </template>
 

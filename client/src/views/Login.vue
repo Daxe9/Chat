@@ -2,24 +2,32 @@
     <div class="login-page">
         <form @submit.prevent="onSubmit">
             <label for="username">USERNAME</label>
-            <input id="username" v-model="username" maxlength="19" placeholder="Your username" type="text">
-            <input type="submit" value="Enter" @click.prevent="onSubmit">
+            <input
+                id="username"
+                v-model="username"
+                maxlength="19"
+                placeholder="Your username"
+                type="text"
+            />
+            <input type="submit" value="Enter" @click.prevent="onSubmit" />
         </form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue"
-import {useStore} from "vuex";
-import {useRouter} from "vue-router";
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { API } from "../services/SocketManager";
 
-const username = ref('')
-const store = useStore()
-const router = useRouter()
+const username = ref("");
+const store = useStore();
+const router = useRouter();
 
 function onSubmit() {
-    store.dispatch("login", username.value)
-    router.push("/")
+    store.dispatch("login", username.value);
+    router.push("/");
+    API.isConnected = true;
 }
 </script>
 
