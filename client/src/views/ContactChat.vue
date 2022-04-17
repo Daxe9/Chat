@@ -3,15 +3,19 @@
         <h2>{{receiver.username}}</h2>
         <router-link :to="{name: 'Home'}" >Back to Home</router-link>
         <FormInput @userMessage="userMessage"/>
-        <h2
-            v-for="(privateMessage, i) in privateMessages"
-            :key="i"
-        >{{privateMessage}}</h2>
+        <TextBlock
+            v-for="(message, index) in privateMessages"
+            :key="index"
+            :author="message.author"
+            :timestamp="message.timestamp"
+            :content="message.content"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
 import FormInput from "../components/FormInput.vue";
+import TextBlock from "../components/TextBlock.vue";
 import {API} from "../services/SocketManager";
 import {useRoute} from "vue-router";
 import {ContactType, MessageBackend} from "../types";
