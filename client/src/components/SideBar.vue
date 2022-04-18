@@ -14,8 +14,11 @@
 import Contact from "./Contact.vue";
 import {API} from "../services/SocketManager"
 import {ref} from "vue";
+import {ContactType} from "../types";
 
-const contacts = ref(API.userList)
+defineProps<{
+    contacts: ContactType[]
+}>()
 </script>
 
 <style scoped>
