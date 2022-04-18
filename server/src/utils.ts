@@ -1,24 +1,26 @@
-import {createLogger, format, transports} from "winston";
+import { createLogger, format, transports } from "winston";
 
+// logger for errors
 const loggerError = createLogger({
     level: "error",
     format: format.json(),
     transports: [
-        new transports.File({filename: "../logs/error.log", level: "error"}),
+        new transports.File({ filename: "../logs/error.log", level: "error" })
     ]
-})
+});
 
+// logger for information log
 const loggerInfo = createLogger({
     level: "info",
     format: format.json(),
     transports: [
-        new transports.File({filename: "../logs/info.log", level: "info"}),
+        new transports.File({ filename: "../logs/info.log", level: "info" })
     ]
-})
+});
 
 if (process.env.NODE_ENV !== "production") {
-    loggerError.add(new transports.Console())
-    loggerInfo.add(new transports.Console())
+    loggerError.add(new transports.Console());
+    loggerInfo.add(new transports.Console());
 }
 
 interface DbConfig {
@@ -38,7 +40,11 @@ interface Message {
 }
 
 // TODO: resolve the problem of accessing class member from decorator and asynchrons function
-const Catch = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+const Catch = (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+) => {
     const originalF = descriptor.value;
     descriptor.value = (...args: any[]) => {
         try {
@@ -46,23 +52,16 @@ const Catch = (target: any, propertyKey: string, descriptor: PropertyDescriptor)
         } catch (error) {
             throw new Error("Error in " + propertyKey + ": " + error);
         }
-
-    }
-}
+    };
+};
 
 function handleUncaughtExceptions() {
     process.on("uncaughtException", (error: Error) => {
         loggerError.error(error.message);
-    })
+    });
     process.on("unhandledRejection", (error: Error) => {
         loggerError.error(error.message);
-    })
+    });
 }
 
-export {
-    loggerError,
-    loggerInfo,
-    handleUncaughtExceptions,
-    DbConfig,
-    Message
-}
+export { loggerError, loggerInfo, handleUncaughtExceptions, DbConfig, Message };

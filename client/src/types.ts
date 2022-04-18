@@ -12,5 +12,5 @@ export interface MessageBackend extends Message {
 export interface ContactType {
     userID: string;
     username: string;
-    self?: boolean
+    self?: boolean;
 }

@@ -2,8 +2,7 @@
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { API } from "./services/SocketManager";
-import { onUnmounted, ref } from "vue";
-import { ContactType } from "./types";
+import { onUnmounted } from "vue";
 
 const store = useStore();
 const router = useRouter();

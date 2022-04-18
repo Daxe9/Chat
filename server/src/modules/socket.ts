@@ -1,20 +1,24 @@
 // TODO: add history messages handling in term of time
-import {Server, Socket} from "socket.io";
-import {Message} from "../utils";
+import { Server, Socket } from "socket.io";
+import { Message } from "../utils";
 import Database from "./db";
-import {resolve} from "path";
+import { resolve } from "path";
 import dotenv from "dotenv";
 
+dotenv.config({ path: resolve(__dirname, "../../.env") });
+
+// extend socket with username
 interface AuthSocket extends Socket {
-    username?: string
+    username?: string;
 }
 
+// struct for user
 interface User {
     userID: string;
     username: string;
 }
 
-dotenv.config({path: resolve(__dirname, "../../.env")});
+// figure database
 const db = new Database(
     {
         user: process.env.DB_USER as string,
@@ -26,7 +30,7 @@ const db = new Database(
 );
 
 // handle message history
-async function getHistory(socket: Socket):Promise<void> {
+async function getHistory(socket: Socket): Promise<void> {
     // get all message history when connected
     const messageHistory: Message[] | void = await db.getAllMessage();
     if (messageHistory) {
@@ -35,9 +39,10 @@ async function getHistory(socket: Socket):Promise<void> {
 }
 
 // handle disconnection
-function disconnection(socket: Socket): void {
+function disconnection(socket: Socket, users: User[]): void {
     socket.on("disconnect", () => {
-        console.log("A user disconnected");
+        users.filter((user) => user.userID !== socket.id);
+        console.log("A user has disconnected");
     });
 }
 
@@ -57,22 +62,23 @@ function handleMessage(io: Server, socket: Socket): void {
     });
 }
 
-function privateMessage(socket: Socket):void {
-    socket.on("privateMessage", ({content, to}: { content: Message, to: any}) => {
-        console.log(content);
-        socket.to(to).emit("privateMessage", {
-            content,
-            from: socket.id
-        })
-    })
+function privateMessage(socket: Socket): void {
+    socket.on(
+        "privateMessage",
+        ({ content, to }: { content: Message; to: any }) => {
+            console.log(content);
+            socket.to(to).emit("privateMessage", {
+                content,
+                from: socket.id
+            });
+        }
+    );
 }
 
-
 function catchAll(socket: Socket): void {
-
     socket.onAny((event: string, ...args: any[]) => {
-        // console.log(`event: ${event}`);
-        // console.log(`args: ${args}`);
+        console.log(`event: ${event}`);
+        console.log(`args: ${args}`);
     });
 }
 
@@ -91,14 +97,14 @@ function processUsername(socket: AuthSocket, next: Function): void {
     next();
 }
 
-
+// handler for all activities
 export function webSocket(io: Server) {
     io.use(processUsername);
     io.on("connection", async (socket: Socket) => {
         console.log("A user connected");
         const users: User[] = [];
 
-        for(let [id, socket] of io.of("/").sockets) {
+        for (let [id, socket] of io.of("/").sockets) {
             users.push({
                 userID: id,
                 // @ts-ignore
@@ -118,10 +124,6 @@ export function webSocket(io: Server) {
         handleMessage(io, socket);
         clearAllMessage(socket);
         catchAll(socket);
-        // disconnection(socket);
-        socket.on("disconnect", () => {
-            users.filter(user => user.userID !== socket.id)
-            console.log("A user has disconnected");
-        });
+        disconnection(socket, users);
     });
 }

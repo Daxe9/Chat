@@ -14,32 +14,30 @@
 
 <script setup lang="ts">
 import FormInput from "../components/FormInput.vue";
-import TextBlock from "../components/TextBlock.vue"
-import {MessageBackend} from "../types";
-import {API} from "../services/SocketManager";
-import {useStore} from "vuex";
-
+import TextBlock from "../components/TextBlock.vue";
+import { MessageBackend } from "../types";
+import { API } from "../services/SocketManager";
+import { useStore } from "vuex";
 
 const store = useStore();
 
 defineProps<{
     allMessages: MessageBackend[];
-}>()
+}>();
 
 /**
  * @description: send message to backend in global chat
- * @param {object} the content of the message
+ * @param {object} content content of the message
  * */
-function userMessage({content}: {content: string}) {
+function userMessage({ content }: { content: string }) {
     const message: MessageBackend = {
         content,
         author: store.state.username,
         to_author: "everyone",
-        timestamp: new Date().toLocaleString(),
-    }
+        timestamp: new Date().toLocaleString()
+    };
     API.sendMessage(message);
 }
-
 </script>
 
 <style scoped>

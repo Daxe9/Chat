@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+// props for rendering block
 defineProps<{
     author: string;
     timestamp: string;

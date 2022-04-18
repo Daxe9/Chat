@@ -1,5 +1,5 @@
-import {createStore} from "vuex";
-import {ContactType} from "../types";
+import { createStore } from "vuex";
+import { ContactType } from "../types";
 
 export default createStore({
     state: {
@@ -18,10 +18,10 @@ export default createStore({
         }
     },
     actions: {
-        login({commit}, username: string) {
+        login({ commit }, username: string) {
             commit("SET_USERNAME", username);
         },
-        logout({commit}, username: string) {
+        logout({ commit }, username: string) {
             commit("UNSET_USERNAME", username);
         }
     }

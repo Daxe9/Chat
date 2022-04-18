@@ -1,19 +1,19 @@
 <template>
     <router-link
         class="contact-link"
-        :to="{name: 'ContactChat', params: {id: contact.userID}}">
-        <h3># {{contact.username}}</h3>
+        :to="{ name: 'ContactChat', params: { id: contact.userID } }"
+    >
+        <h3># {{ contact.username }}</h3>
     </router-link>
 </template>
 
 <script setup lang="ts">
-import {ContactType} from "../types";
+import { ContactType } from "../types";
 
+// single contact
 defineProps<{
-  contact: ContactType;
+    contact: ContactType;
 }>();
-
-
 </script>
 
 <style scoped>

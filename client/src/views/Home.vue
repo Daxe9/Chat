@@ -1,7 +1,7 @@
 <template>
     <div id="home" v-if="isConnected">
-        <SideBar id="side-bar" :contacts="contacts"/>
-        <GlobalChat id="global-chat" :allMessages="allMessages"/>
+        <SideBar id="side-bar" :contacts="contacts" />
+        <GlobalChat id="global-chat" :allMessages="allMessages" />
     </div>
 </template>
 
@@ -10,37 +10,28 @@ import SideBar from "../components/SideBar.vue";
 import GlobalChat from "./GlobalChat.vue";
 import { useStore } from "vuex";
 import { API } from "../services/SocketManager";
-import {ContactType, MessageBackend} from "../types";
+import { ContactType, MessageBackend } from "../types";
 import { ref, onMounted } from "vue";
 
 const store = useStore();
 const isConnected = ref<boolean>(API.isConnected);
 const username = store.state.username;
-const contacts= ref<ContactType[]>(API.userList)
-const allMessages = ref<MessageBackend[]>(API.historyMessages)
+const contacts = ref<ContactType[]>(API.userList);
+const allMessages = ref<MessageBackend[]>(API.historyMessages);
 
-onMounted(async () => {// set the username and connect to the socket
-    API.socket.auth = {username};
-})
-
-// connection error
-API.socket.on("connect_error", (err: any) => {
-    if (err.message === "Authentication error") {
-        store.dispatch("logout");
-    } else {
-        // generic error
-        console.log("Could not connect to server");
+onMounted(async () => {
+    // set the username and connect to the socket
+    try {
+        await API.login(username);
+    } catch (e) {
+        console.log(e);
+        await store.dispatch("logout");
     }
 });
 
-if(!API.socket.connected){
-    API.socket.on("connect", () => {
-        listenToEvents()
-    })
-} else {
-    listenToEvents()
-}
+listenToEvents();
 
+// listen to events
 function listenToEvents() {
     API.socket.on("userList", (users: ContactType[]) => {
         users.forEach((user) => {
@@ -65,22 +56,20 @@ function listenToEvents() {
         user.self = false;
         API.userList.push(user);
         store.state.contacts.push(user);
-        console.log("set new users");
     });
 
     // listen for global chat history
     API.socket.on("messageHistory", (messages: MessageBackend[]) => {
         allMessages.value = messages;
-        API.historyMessages = messages
+        API.historyMessages = messages;
     });
 
     // listen for upcoming global chat messages
     API.socket.on("broadcastMessage", (message: MessageBackend) => {
-        allMessages.value.push(message)
-        API.historyMessages = allMessages.value
+        allMessages.value.push(message);
+        API.historyMessages = allMessages.value;
     });
 }
-
 </script>
 
 <style scoped>

@@ -24,10 +24,11 @@ const username = ref("");
 const store = useStore();
 const router = useRouter();
 
+// login
 function onSubmit() {
     store.dispatch("login", username.value);
-    router.push("/");
     API.isConnected = true;
+    router.push("/");
 }
 </script>
 
