@@ -16,8 +16,8 @@ import { ref, onMounted } from "vue";
 const store = useStore();
 const isConnected = ref<boolean>(API.isConnected);
 const username = store.state.username;
-const contacts= ref<ContactType[]>([])
-const allMessages = ref<MessageBackend[]>([])
+const contacts= ref<ContactType[]>(API.userList)
+const allMessages = ref<MessageBackend[]>(API.historyMessages)
 
 onMounted(async () => {// set the username and connect to the socket
     API.socket.auth = {username};
@@ -33,13 +33,16 @@ API.socket.on("connect_error", (err: any) => {
     }
 });
 
-API.socket.on("connect", () => {
+if(!API.socket.connected){
+    API.socket.on("connect", () => {
+        listenToEvents()
+    })
+} else {
+    listenToEvents()
+}
 
-    console.log(API.socket.connected);
-
+function listenToEvents() {
     API.socket.on("userList", (users: ContactType[]) => {
-        console.log(API.socket.connected);
-        console.log("received userList");
         users.forEach((user) => {
             user.self = user.userID === API.socket.id;
         });
@@ -50,7 +53,6 @@ API.socket.on("connect", () => {
             if (a.username < b.username) return -1;
             return a.username > b.username ? 1 : 0;
         });
-
         API.userList = users;
         contacts.value = users;
         isConnected.value = true;
@@ -69,13 +71,16 @@ API.socket.on("connect", () => {
     // listen for global chat history
     API.socket.on("messageHistory", (messages: MessageBackend[]) => {
         allMessages.value = messages;
+        API.historyMessages = messages
     });
 
     // listen for upcoming global chat messages
     API.socket.on("broadcastMessage", (message: MessageBackend) => {
-        allMessages.value.push(message);
+        allMessages.value.push(message)
+        API.historyMessages = allMessages.value
     });
-})
+}
+
 </script>
 
 <style scoped>

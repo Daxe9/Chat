@@ -9,6 +9,7 @@ class SocketManager {
     public userList: ContactType[] = [];
     public currentContact: ContactType;
     public isConnected: boolean = false;
+    public historyMessages: MessageBackend[] = [];
     public async connectToDB() {
        this.socket.connect();
     }
