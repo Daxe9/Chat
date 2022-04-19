@@ -83,10 +83,16 @@ const Catch = (
 
 function handleUncaughtExceptions() {
     process.on("uncaughtException", (error: Error) => {
-        loggerError.error(error.message);
+        loggerError.error({
+            message: error.message,
+            time: new Date().toLocaleString()
+        });
     });
     process.on("unhandledRejection", (error: Error) => {
-        loggerError.error(error.message);
+        loggerError.error({
+            message: error.message,
+            time: new Date().toLocaleString()
+        });
     });
 }
 

@@ -74,7 +74,6 @@ function privateMessage(socket: AuthSocket): void {
     socket.on(
         "privateMessage",
         ({ content, to }: { content: Message; to: any }) => {
-            console.log(content);
             // @ts-ignore
             socket.to(to).to(socket.userID).emit("privateMessage", {
                 content,

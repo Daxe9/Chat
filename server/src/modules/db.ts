@@ -19,7 +19,11 @@ export default class Database {
                 ...this.pool
             });
         } catch (e: any) {
-            loggerError.error({ message: "Connection failed", ...e });
+            loggerError.error({
+                message: "Connection failed",
+                time: new Date().toLocaleString(),
+                ...e
+            });
         }
     }
     /**
@@ -32,7 +36,11 @@ export default class Database {
                                                FROM ${this.row}`);
             return res.rows;
         } catch (err: any) {
-            loggerError.error({ message: err.message, ...err });
+            loggerError.error({
+                message: err.message,
+                time: new Date().toLocaleString(),
+                ...err
+            });
         }
     }
     /**
@@ -53,7 +61,11 @@ export default class Database {
                 ]
             );
         } catch (err: any) {
-            loggerError.error({ message: err.message, ...err });
+            loggerError.error({
+                message: err.message,
+                time: new Date().toLocaleString(),
+                ...err
+            });
         }
     }
     /**
@@ -69,7 +81,11 @@ export default class Database {
                 [name]
             );
         } catch (err: any) {
-            loggerError.error({ message: err.message, ...err });
+            loggerError.error({
+                message: err.message,
+                time: new Date().toLocaleString(),
+                ...err
+            });
         }
     }
 }
