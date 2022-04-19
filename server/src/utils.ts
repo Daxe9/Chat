@@ -1,5 +1,31 @@
 import { createLogger, format, transports } from "winston";
 
+class SessionStore {
+    findSession(id: string) {}
+    saveSession(id: string, session: any) {}
+    findAllSessions() {}
+}
+
+class InMemorySessionStore extends SessionStore {
+    public sessions: any;
+    constructor() {
+        super();
+        this.sessions = new Map();
+    }
+
+    findSession(id: string) {
+        return this.sessions.get(id);
+    }
+
+    saveSession(id: string, session: any) {
+        this.sessions.set(id, session);
+    }
+
+    findAllSessions() {
+        return [...this.sessions.values()];
+    }
+}
+
 // logger for errors
 const loggerError = createLogger({
     level: "error",
@@ -64,4 +90,11 @@ function handleUncaughtExceptions() {
     });
 }
 
-export { loggerError, loggerInfo, handleUncaughtExceptions, DbConfig, Message };
+export {
+    loggerError,
+    loggerInfo,
+    handleUncaughtExceptions,
+    DbConfig,
+    Message,
+    InMemorySessionStore
+};

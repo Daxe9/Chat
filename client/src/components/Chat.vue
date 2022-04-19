@@ -75,4 +75,3 @@ function listenToEvents() {
     API.socket.emit("emitPrivateMessage", {});
 }
 </script>
-

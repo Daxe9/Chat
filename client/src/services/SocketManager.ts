@@ -21,9 +21,17 @@ class SocketManager {
     /**
      * @description: set username to authentication and login to backend
      * @param {string} username, username of the user
+     * @param {string | null} sessionID, id of current session
      * */
-    public async login(username: string): Promise<void> {
-        this.socket.auth = { username };
+    public async login(
+        username: string,
+        sessionID?: string | null
+    ): Promise<void> {
+        const auth = { username };
+        if (sessionID) {
+            Object.assign(auth, { sessionID });
+        }
+        this.socket.auth = auth;
         await this.connectToBackend();
         // connection error
         this.socket.on("connect_error", (err: any) => {

@@ -1,15 +1,19 @@
 // TODO: add history messages handling in term of time
 import { Server, Socket } from "socket.io";
-import { Message } from "../utils";
+import { InMemorySessionStore, Message } from "../utils";
 import Database from "./db";
 import { resolve } from "path";
 import dotenv from "dotenv";
+import * as crypto from "crypto";
 
 dotenv.config({ path: resolve(__dirname, "../../.env") });
+const sessionStore = new InMemorySessionStore();
 
 // extend socket with username
 interface AuthSocket extends Socket {
     username?: string;
+    sessionID?: string;
+    userID?: string;
 }
 
 // struct for user
@@ -28,6 +32,10 @@ const db = new Database(
     },
     process.env.DB_TABLE as string
 );
+
+function randomID(): string {
+    return crypto.randomBytes(8).toString("hex");
+}
 
 // handle message history
 async function getHistory(socket: Socket): Promise<void> {
@@ -62,12 +70,13 @@ function handleMessage(io: Server, socket: Socket): void {
     });
 }
 
-function privateMessage(socket: Socket): void {
+function privateMessage(socket: AuthSocket): void {
     socket.on(
         "privateMessage",
         ({ content, to }: { content: Message; to: any }) => {
             console.log(content);
-            socket.to(to).emit("privateMessage", {
+            // @ts-ignore
+            socket.to(to).to(socket.userID).emit("privateMessage", {
                 content,
                 from: socket.id
             });
@@ -88,20 +97,43 @@ function clearAllMessage(socket: Socket): void {
     });
 }
 
-function processUsername(socket: AuthSocket, next: Function): void {
+function authentication(socket: AuthSocket, next: Function): void {
+    const sessionID = socket.handshake.auth.sessionID;
+    if (sessionID) {
+        const session = sessionStore.findSession(sessionID);
+        if (session) {
+            socket.sessionID = sessionID;
+            socket.userID = session.userID;
+            socket.username = session.username;
+            return next();
+        }
+    }
+
     const username = socket.handshake.auth.username;
     if (!username) {
         return next(new Error("Authentication error"));
     }
+
+    socket.sessionID = randomID();
+    socket.userID = randomID();
+
     socket.username = username;
     next();
 }
 
 // handler for all activities
 export function webSocket(io: Server) {
-    io.use(processUsername);
-    io.on("connection", async (socket: Socket) => {
+    io.use(authentication);
+    io.on("connection", async (socket: AuthSocket) => {
         console.log("A user connected");
+
+        socket.emit("session", {
+            sessionID: socket.sessionID,
+            userID: socket.userID
+        });
+        // @ts-ignore
+        socket.join(socket.userID);
+
         const users: User[] = [];
 
         for (let [id, socket] of io.of("/").sockets) {

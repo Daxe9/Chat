@@ -15,14 +15,15 @@ import { ref, onMounted } from "vue";
 
 const store = useStore();
 const isConnected = ref<boolean>(API.isConnected);
-const username = store.state.username;
+const username: string = store.state.username;
+const sessionID: string | null = localStorage.getItem("sessionID");
 const contacts = ref<ContactType[]>(API.userList);
 const allMessages = ref<MessageBackend[]>(API.historyMessages);
 
 onMounted(async () => {
     // set the username and connect to the socket
     try {
-        await API.login(username);
+        await API.login(username, sessionID);
     } catch (e) {
         console.log(e);
         await store.dispatch("logout");
@@ -33,6 +34,16 @@ listenToEvents();
 
 // listen to events
 function listenToEvents() {
+    API.socket.on(
+        "session",
+        ({ sessionID, userID }: { sessionID: string; userID: string }) => {
+            Object.assign(API.socket.auth, { sessionID });
+            localStorage.setItem("sessionID", sessionID);
+            // @ts-ignore
+            API.socket.userID = userID;
+        }
+    );
+
     API.socket.on("userList", (users: ContactType[]) => {
         users.forEach((user) => {
             user.self = user.userID === API.socket.id;
