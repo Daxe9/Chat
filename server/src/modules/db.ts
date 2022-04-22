@@ -1,18 +1,23 @@
 import { Pool } from "pg";
-import { DbConfig, loggerError, loggerInfo, Message } from "../utils";
+import { DbConfig, Message } from "../helper/types";
+import { loggerInfo, loggerError } from "../helper/logger";
 
 export default class Database {
+    // database pool
     public pool: Pool;
-    public readonly row: string;
+
+    // database table
+    public readonly table: string;
+
     /**
      * @description: configuration for database
      * @param {object} config, configuration object
-     * @param {string} rowOfTable, row of table of database
+     * @param {string} table, row of table of database
      * */
-    constructor(config: DbConfig, rowOfTable: string) {
+    constructor(config: DbConfig, table: string) {
         try {
             this.pool = new Pool(config);
-            this.row = rowOfTable;
+            this.table = table;
 
             loggerInfo.info({
                 message: "Connection established",
@@ -33,7 +38,8 @@ export default class Database {
     public async getAllMessage(): Promise<Message[] | void> {
         try {
             const res = await this.pool.query(`SELECT *
-                                               FROM ${this.row}`);
+                                               FROM ${this.table}`);
+
             return res.rows;
         } catch (err: any) {
             loggerError.error({
@@ -50,7 +56,7 @@ export default class Database {
     public async storeMessage(message: Message): Promise<void> {
         try {
             await this.pool.query(
-                `INSERT INTO ${this.row} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
+                `INSERT INTO ${this.table} (AUTHOR, CONTENT, TIMESTAMP, TO_AUTHOR)
                                    VALUES ($1, $2, $3,
                                            $4)`,
                 [
@@ -76,7 +82,7 @@ export default class Database {
         try {
             await this.pool.query(
                 `DELETE
-                                   FROM ${this.row}
+                                   FROM ${this.table}
                                    WHERE AUTHOR = $1`,
                 [name]
             );

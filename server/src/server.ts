@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { webSocket } from "./modules/socket";
 import { resolve } from "path";
 import dotenv from "dotenv";
-import { handleUncaughtExceptions } from "./utils";
+import { handleUncaughtExceptions } from "./helper/logger";
 
 dotenv.config({ path: resolve(__dirname, "../.env") });
 
@@ -15,6 +15,7 @@ const io: Server = new Server(server, {
 
 // server
 webSocket(io);
+
 // log error for uncaught exceptions
 handleUncaughtExceptions();
 

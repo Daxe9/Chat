@@ -1,6 +1,6 @@
-// TODO: add history messages handling in term of time
 import { Server, Socket } from "socket.io";
-import { InMemorySessionStore, Message } from "../utils";
+import { InMemorySessionStore } from "../helper/SessionStorage";
+import { AuthSocket, Message, User } from "../helper/types";
 import Database from "./db";
 import { resolve } from "path";
 import dotenv from "dotenv";
@@ -8,19 +8,6 @@ import * as crypto from "crypto";
 
 dotenv.config({ path: resolve(__dirname, "../../.env") });
 const sessionStore = new InMemorySessionStore();
-
-// extend socket with username
-interface AuthSocket extends Socket {
-    username?: string;
-    sessionID?: string;
-    userID?: string;
-}
-
-// struct for user
-interface User {
-    userID: string;
-    username: string;
-}
 
 // figure database
 const db = new Database(
@@ -70,6 +57,7 @@ function handleMessage(io: Server, socket: Socket): void {
     });
 }
 
+// private messaging
 function privateMessage(socket: AuthSocket): void {
     socket.on(
         "privateMessage",
@@ -83,6 +71,7 @@ function privateMessage(socket: AuthSocket): void {
     );
 }
 
+// catch all received events
 function catchAll(socket: Socket): void {
     socket.onAny((event: string, ...args: any[]) => {
         console.log(`event: ${event}`);
@@ -90,12 +79,14 @@ function catchAll(socket: Socket): void {
     });
 }
 
+// clear message by name
 function clearAllMessage(socket: Socket): void {
     socket.on("clearAllMessage", async (name: string) => {
         await db.clearAllMessageByName(name);
     });
 }
 
+// authentication through sessionID and username
 function authentication(socket: AuthSocket, next: Function): void {
     const sessionID = socket.handshake.auth.sessionID;
     if (sessionID) {
@@ -120,6 +111,15 @@ function authentication(socket: AuthSocket, next: Function): void {
     next();
 }
 
+// handle new user connection
+function newUserConnection(socket: Socket) {
+    socket.broadcast.emit("newUserConnection", {
+        userID: socket.id,
+        // @ts-ignore
+        username: socket.username
+    } as User);
+}
+
 // handler for all activities
 export function webSocket(io: Server) {
     io.use(authentication);
@@ -133,8 +133,8 @@ export function webSocket(io: Server) {
         // @ts-ignore
         socket.join(socket.userID);
 
+        // handler for connections and emission of all connected users
         const users: User[] = [];
-
         for (let [id, socket] of io.of("/").sockets) {
             users.push({
                 userID: id,
@@ -142,15 +142,10 @@ export function webSocket(io: Server) {
                 username: socket.username
             } as User);
         }
-
-        socket.broadcast.emit("newUserConnection", {
-            userID: socket.id,
-            // @ts-ignore
-            username: socket.username
-        } as User);
-
         socket.emit("userList", users);
+
         await getHistory(socket);
+        newUserConnection(socket);
         privateMessage(socket);
         handleMessage(io, socket);
         clearAllMessage(socket);
