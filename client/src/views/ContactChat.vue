@@ -1,14 +1,14 @@
 <template>
-    <div>
+    <div v-if="receiver">
         <h2>{{ receiver.username }}</h2>
         <router-link :to="{ name: 'Home' }">Back to Home</router-link>
         <FormInput @userMessage="userMessage" />
         <TextBlock
             v-for="(message, index) in privateMessages"
             :key="index"
-            :author="message.author"
-            :timestamp="message.timestamp"
-            :content="message.content"
+            :author="message['author']"
+            :timestamp="message['timestamp']"
+            :content="message['content']"
         />
     </div>
 </template>
