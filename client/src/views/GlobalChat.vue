@@ -1,7 +1,9 @@
 <template>
     <div id="global-chat">
-        <h1>Global chat</h1>
-        <FormInput @userMessage="userMessage" />
+        <div id="text-block">
+            <h1>Global chat</h1>
+            <FormInput @userMessage="userMessage"/>
+        </div>
         <TextBlock
             v-for="(message, i) in allMessages"
             :key="i"
@@ -15,9 +17,9 @@
 <script setup lang="ts">
 import FormInput from "../components/FormInput.vue";
 import TextBlock from "../components/TextBlock.vue";
-import { MessageBackend } from "../types";
-import { API } from "../services/SocketManager";
-import { useStore } from "vuex";
+import {MessageBackend} from "../types";
+import {API} from "../services/SocketManager";
+import {useStore} from "vuex";
 
 const store = useStore();
 
@@ -29,7 +31,7 @@ defineProps<{
  * @description: send message to backend in global chat
  * @param {object} content content of the message
  * */
-function userMessage({ content }: { content: string }) {
+function userMessage({content}: { content: string }) {
     const message: MessageBackend = {
         content,
         author: store.state.username,
@@ -42,6 +44,12 @@ function userMessage({ content }: { content: string }) {
 
 <style scoped>
 #global-chat {
+    overflow: scroll;
     height: 100vh;
+}
+
+#text-block {
+    position: sticky;
+    top: 0;
 }
 </style>
